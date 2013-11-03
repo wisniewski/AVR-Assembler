@@ -13,6 +13,6 @@ Version: AVR8_Toolchain_Version:3.4.2.939 GCC_VERSION:4.7.2
 
 Atmel Studio 6 (Version: 6.1.2562)
 
-Optymalizacja -Os, Wew. oscylator RC 8Mhz
+Optymalizacja -Os, Wew. oscylator RC 8MHz
 
 uC: ATmega32A
