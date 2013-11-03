@@ -1,4 +1,4 @@
-AVR Assembler
+AVR Assembler / C
 =============
 
 Piekło ma początek, końca nie będzie! Apokalipsa A.D. 2017			
