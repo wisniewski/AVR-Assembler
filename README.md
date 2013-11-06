@@ -6,6 +6,9 @@ kolokwiami itd.
 
 `Skrypt, datasheety, AVR-Libc Manual` http://www.fizyka.umk.pl/~daras/avr/
 
+Publikuję również swoje rozwiązania zadań z kursu `Programowanie mikrokontrolerów AVR w języku C`. Mogą 
+się znacząco różnić od standardowych (proponowanych na zajęciach) rozwiązań.
+
 Autor i warunki:
 --------------
 Piekło ma początek, końca nie będzie! Apokalipsa A.D. 2017			
