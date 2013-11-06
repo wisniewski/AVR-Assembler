@@ -15,4 +15,4 @@ Liczby C(1) i V(0):
 128 i 129
 
 Carry:
-Gdy w trakcie odejmowania wyst¹pi³a po¿yczka do s¹siedniej grupy bitów.
+Gdy w trakcie odejmowania wyst¹pila pozyczka do sasiedniej grupy bitow.

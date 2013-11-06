@@ -6,4 +6,4 @@ b) U2
 Dodawanie: Verflow, Negative
 Odejmowanie: Verflow, Negative
 
-Carry, Zero te¿? (??)
+Carry, Zero tez? (??)
