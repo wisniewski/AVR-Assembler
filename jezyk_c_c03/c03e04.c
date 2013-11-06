@@ -1,6 +1,6 @@
-U mnie konfiuracja na płytce stykowej jest następująca:
+U mnie konfiuracja na plytce stykowej jest następujaca:
 uC: ATmega32A
-Wyświetlacz 7-segmentowy: 4-cyfrowy ze wspólną katodą (cai5461ah 4 digit)
+Wyswietlacz 7-segmentowy: 4-cyfrowy ze wspolną katoda (cai5461ah 4 digit)
 Tranzystory: NPN BC547B
 PCx - rezystor - baza
 PDx - rezystor - segment A itd.

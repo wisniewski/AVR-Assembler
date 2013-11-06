@@ -1,6 +1,6 @@
-/* Wykorzystanie Timera0 w trybie CTC oraz przerwań do wyświetlania treści na 
-wyświetlaczu LCD przy wykorzystaniu jednego ciągu formatującego zawierającego 
-również komendy dla sterownika. */
+/* Wykorzystanie Timera0 w trybie CTC oraz przerwan do wyswietlania tresci na 
+wyswietlaczu LCD przy wykorzystaniu jednego ciagu formatujacego zawierajacego 
+rowniez komendy dla sterownika. */
 
 #include <avr/io.h> //I/O, rejestry itd.
 #include <avr/pgmspace.h> //progmem
