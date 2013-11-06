@@ -2,7 +2,9 @@ AVR Assembler / C
 =============
 Rozwiązania zadań programistycznych do skryptu `"Mikroprocesory i technika mikroprocesorowa"` 
 autorstwa `Dariusza Chaberskiego.` Mają one charakter pomocniczy, powtórzenie programów przed
-kolokwiami itd. 
+kolokwiami itd.
+
+`Skrypt, datasheety, AVR-Libc Manual` http://www.fizyka.umk.pl/~daras/avr/
 
 Autor i warunki:
 --------------
