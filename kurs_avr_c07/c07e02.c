@@ -23,7 +23,7 @@ struct lcd_field //definicja struktury
 //pole bitowe do przechowywania stanow przyciskow
 struct button_field
 {
-	volatile char : 4; //puste bity, bo chce zajmowac PC4-7
+    volatile char : 4; //puste bity, bo chce zajmowac PC4-7
     volatile char k : 4;
 };
 
@@ -57,11 +57,11 @@ void lcd_show(void);
 //struktura menu // <-------- --------- ------- M E N U
 struct menu
 {
-	struct menu *left;
-	struct menu *right;
-	struct menu *up;
-	struct menu *down;
-	char *str;
+    struct menu *left;
+    struct menu *right;
+    struct menu *up;
+    struct menu *down;
+    char *str;
 };
 
 struct menu M1, M2, M3, M11, M12, M13, M131, M132, M21, M22, M31;
@@ -87,12 +87,12 @@ struct menu * current_menu;
 //wait \004\377
 //komenda \001\x28
 const char lcd_format[] PROGMEM =
-"\004\377\001\x28\004\377\001\x28\004\377\001\x28\004\377\
+    "\004\377\001\x28\004\377\001\x28\004\377\001\x28\004\377\
 \001\x0c\004\377\001\x06\004\377\001\x01\004\377\1\x28\001\x81\
 pies i krowa\004\377\001\x28\004\377\001\xc3Kot z umk";
 
 const char lcd_init[] PROGMEM =
-"\004\377\001\x28\004\377\001\x28\004\377\001\x28\004\377\
+    "\004\377\001\x28\004\377\001\x28\004\377\001\x28\004\377\
 \001\x0c\004\377\001\x06\004\377\001\x01\004\377";
 
 volatile  uint8_t lcd_buff_full;
@@ -100,17 +100,17 @@ char *lcd_buff;
 
 ISR(TIMER0_COMP_vect) //10 k Hz = 100 us <-------- P R Z E R W A N I E
 {
-	buttons_debouncing(); //obsluga przyciskow w przerwaniu
-	lcd_show(); //obsluga LCD w przerwaniu
+    buttons_debouncing(); //obsluga przyciskow w przerwaniu
+    lcd_show(); //obsluga LCD w przerwaniu
 }
 
 int main (void) // <-------- -------- -------- -------- ----- M A I N
 {
-	//deklaracja przyciskow i polaryzacja
-	hardware_keys_port = 0xf; //f lub 15 - bo tylko robie pull up na 4 bitach!
+    //deklaracja przyciskow i polaryzacja
+    hardware_keys_port = 0xf; //f lub 15 - bo tylko robie pull up na 4 bitach!
 
-	DDRB = 0xff;
-	PORTB = 0xff;
+    DDRB = 0xff;
+    PORTB = 0xff;
 
     //inicjalizacja LCD
     lcd_rs_dir = 1;
@@ -118,64 +118,64 @@ int main (void) // <-------- -------- -------- -------- ----- M A I N
     lcd_e_dir = 1;
     lcd_data_dir = 0xf;
 
-	//wyswietlanie napisu na lcd
-	lcd_buff_full = 1;
-	lcd_buff = malloc(32);
+    //wyswietlanie napisu na lcd
+    lcd_buff_full = 1;
+    lcd_buff = malloc(32);
     sprintf_P(lcd_buff, lcd_init);
 
-	//obsluga przerwan i timera0
+    //obsluga przerwan i timera0
     TCCR0 |= _BV(CS01) | (1 << WGM01);
     TIMSK |= (1 << OCIE0);
     OCR0 = 99;
     sei();
 
-	current_menu = &M1;
+    current_menu = &M1;
 
     while(1)
-	{
-		if(keys != 0)
-		{
-			switch(keys)
-			{
-				case 1:
-				if((current_menu -> left) != NULL);
-				{
-                    current_menu = current_menu -> left;
-                    sprintf(lcd_buff, "\001\x01\004\xff%s",current_menu->str); //czysci ekran (miganie)
-                    lcd_buff_full = 1; //wyslanie do lcd
-				}
-				break;
+    {
+    if(keys != 0)
+    {
+        switch(keys)
+        {
+        case 1:
+            if((current_menu -> left) != NULL);
+            {
+            current_menu = current_menu -> left;
+            sprintf(lcd_buff, "\001\x01\004\xff%s",current_menu->str); //czysci ekran (miganie)
+            lcd_buff_full = 1; //wyslanie do lcd
+            }
+            break;
 
-				case 2:
-				if((current_menu -> right) != NULL);
-				{
-                    current_menu = current_menu -> right;
-                    sprintf(lcd_buff, "\001\x80\004\xff%s",current_menu->str); //cofa do punktu 0 (nadpisuje)
-                    lcd_buff_full = 1;
-				}
-				break;
+        case 2:
+            if((current_menu -> right) != NULL);
+            {
+            current_menu = current_menu -> right;
+            sprintf(lcd_buff, "\001\x80\004\xff%s",current_menu->str); //cofa do punktu 0 (nadpisuje)
+            lcd_buff_full = 1;
+            }
+            break;
 
-				case 4:
-				if((current_menu -> down) != NULL);
-				{
-                    current_menu = current_menu -> down;
-                    sprintf(lcd_buff, "\001\x80\004\xff%s",current_menu->str); //cofa do punktu 0 (nadpisuje)
-                    lcd_buff_full = 1;
-				}
-				break;
+        case 4:
+            if((current_menu -> down) != NULL);
+            {
+            current_menu = current_menu -> down;
+            sprintf(lcd_buff, "\001\x80\004\xff%s",current_menu->str); //cofa do punktu 0 (nadpisuje)
+            lcd_buff_full = 1;
+            }
+            break;
 
-				case 8:
-				if((current_menu -> up) != NULL);
-				{
-                    current_menu = current_menu -> up;
-                    sprintf(lcd_buff, "\001\x80\004\xff%s",current_menu->str); //cofa do punktu 0 (nadpisuje)
-                    lcd_buff_full = 1;
-				}
-				break;
-			}
-			keys = 0;
-		}
-	}
+        case 8:
+            if((current_menu -> up) != NULL);
+            {
+            current_menu = current_menu -> up;
+            sprintf(lcd_buff, "\001\x80\004\xff%s",current_menu->str); //cofa do punktu 0 (nadpisuje)
+            lcd_buff_full = 1;
+            }
+            break;
+        }
+        keys = 0;
+    }
+    }
 
     return 0;
 }
@@ -207,74 +207,75 @@ void lcd_write_command(char data)
 
 void buttons_debouncing(void)
 {
-	static uint8_t tmp_key, key_cnt, t;
-	if(key_cnt == 0)
-	{
-		switch(t)
-		{
-			case 0:
-			{
-			tmp_key = hardware_keys;
-			if(tmp_key != 15) //15 bo zadeklarowalem CZTERY bity, a 15 = 0b1111, sprawdzam zadeklarowane bity
-				{
-				t = 1;
-				key_cnt = 200;
-				}
-			}
-			break;
+    static uint8_t tmp_key, key_cnt, t;
+    if(key_cnt == 0)
+    {
+        switch(t)
+        {
+        case 0:
+        {
+            tmp_key = hardware_keys;
+            if(tmp_key != 15) //15 bo zadeklarowalem CZTERY bity, a 15 = 0b1111, sprawdzam zadeklarowane bity
+            {
+                t = 1;
+                key_cnt = 200;
+            }
+        }
+        break;
 
-			case 1:
-			{
-			if(hardware_keys == tmp_key)
-				{
-				keys = (~tmp_key)&0xf; //wyzerowanie 4 starszych bitow
-				t = 2;
-				}
-			else
-				t = 0;
-				}
-			break;
+        case 1:
+        {
+            if(hardware_keys == tmp_key)
+            {
+                keys = (~tmp_key)&0xf; //wyzerowanie 4 starszych bitow
+                t = 2;
+            }
+            else
+                t = 0;
+        }
+        break;
 
-			case 2:
-			{
-			if(hardware_keys == 15)
-				t = 0;
-			}
-			break;
-		}
-	}
-	else
-		key_cnt--;
+        case 2:
+        {
+            if(hardware_keys == 15)
+                t = 0;
+        }
+        break;
+        }
+    }
+    else
+        key_cnt--;
 }
 
 void lcd_show(void)
 {
-	static uint8_t lcd_cnt, lcd_read;
-	if((lcd_buff_full) && (lcd_cnt == 0))
+    static uint8_t lcd_cnt, lcd_read;
+    if((lcd_buff_full) && (lcd_cnt == 0))
     {
         switch(lcd_buff[(int)lcd_read])
         {
-            case 0: //koniec lancucha
-            {
-                lcd_buff_full = 0;
-                lcd_read = 0;
-            }
-            break;
-            case 1: //wyslanie komendy do wyswietlacza
-            {
-                lcd_read++;
-                lcd_write_command(lcd_buff[lcd_read++]); //wysylam komende
-                //i znowu inkrementuje, aby wskazywac na kolejny element
-            }
-            break;
-            case 4: //czekanie
-            {
-                lcd_read++;
-                lcd_cnt = lcd_buff[lcd_read++];
-            }
-            break;
-            //lcd_read mowi ktory znak odczytac oraz inkrementacja do nastepnego znaku
-            default: lcd_write_data(lcd_buff[lcd_read++]);
+        case 0: //koniec lancucha
+        {
+            lcd_buff_full = 0;
+            lcd_read = 0;
+        }
+        break;
+        case 1: //wyslanie komendy do wyswietlacza
+        {
+            lcd_read++;
+            lcd_write_command(lcd_buff[lcd_read++]); //wysylam komende
+            //i znowu inkrementuje, aby wskazywac na kolejny element
+        }
+        break;
+        case 4: //czekanie
+        {
+            lcd_read++;
+            lcd_cnt = lcd_buff[lcd_read++];
+        }
+        break;
+        //lcd_read mowi ktory znak odczytac oraz inkrementacja do nastepnego znaku
+        default:
+            lcd_write_data(lcd_buff[lcd_read++]);
         }
     }
     else if(lcd_cnt > 0)
