@@ -13,7 +13,7 @@ ldi r16, 0xc0 ;0b1100 0000
 loop:
 	in r0, pinb ;wrzuc do r0 stan na pinie b
 	eor r0, r16 ;XOR dla dwoch najstarszych bitow
-	out porta, r0 //wrzuc ta wartosc do portu a (jesli nic nie podlaczone to stan niski)
+	out porta, r0 ;wrzuc ta wartosc do portu a (jesli nic nie podlaczone to stan niski)
 
 rjmp loop
 
