@@ -9,6 +9,7 @@ przerwanie. Aktualizacja cyfr na multipleksowanym wyswietlaczu
 #include<avr/interrupt.h>
 #include<stdint.h>
 
+//przechowywanie poszczegolnych cyfr w pamieci FLASH
 const uint8_t PROGMEM digits_show[10] = {0x3F, 0x06, 0x5B, 0x4F, 0x66,
 0x6D, 0x7D, 0x07, 0x7F, 0x6F};
 
@@ -35,7 +36,7 @@ ISR(TIMER0_COMP_vect) //1kHz = 1 milisekunda
 	PORTC = increase_digit(&i, &actual_digit);
 	
 	//przecinek dziesietny tylko po pierwszej cyfrze
-	if(!inc)
+	if(!inc) //odczyt bajtu z pamieci FLASH
 		PORTD = pgm_read_byte(&digits_show[digits_values[inc++]]) | 0x80; //DP 7seg
 	else 
 		PORTD = pgm_read_byte(&digits_show[digits_values[inc++]]); //bez DP 7seg
