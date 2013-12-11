@@ -1,6 +1,6 @@
 ;overflow
 .nolist
-.include "m32adef.inc"
+.include "m16def.inc"
 .list
 
 .cseg
@@ -8,8 +8,10 @@
 
 jmp start
 
-;dla ATmegi16 to $012 !!!!!!!!!!
-.org $016 ;Timer/Counter0 Overflow
+.org OVF0addr ;Timer/Counter0 Overflow
+rjmp sub_ext_1
+
+.org OC0addr ;Timer/Counter0 Compare Match
 rjmp sub_ext_0
 
 start:
@@ -21,21 +23,18 @@ start:
 	ldi r16, LOW(RAMEND)
 	out spl, r16
 
-	sbi ddrc, 0
-	cbi portc, 0
-
 	;-- konf kontrolera przerwan --
 	
-	;overflow
-	ldi r16, (1<<TOIE0)
-	out TIMSK, r16
-	;compare match
-	ldi r16, (1<<OCIE0)
+	;overflow i compare match
+	ldi r16, (1<<TOIE0) | (1<<OCIE0)
 	out TIMSK, r16
 
-	;preskaler (u mnie generuje okolo 0,5 sekundy)
-	ldi r16, (1<<CS02) | (1<<CS00)
+	;preskaler (fmax)
+	ldi r16, (1<<CS00)
 	out TCCR0, r16 
+
+	ldi r16, 0x0f
+	out OCR0, r16 
 	
 	;do XORa dla ledow
 	ldi r18, 1
@@ -45,10 +44,12 @@ start:
 loop:
 	rjmp loop
 
-;Timer/Counter0 Overflow
+;Timer/Counter0 Compare Match
 sub_ext_0:
-	in r16, portc
-	eor r16, r18
-	out portc, r16
-	nop
+	inc r16
+reti
+
+;Timer/Counter0 Overflow
+sub_ext_1:
+	dec r16
 reti
