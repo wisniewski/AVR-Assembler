@@ -1,8 +1,11 @@
-;Zrealizuj projekt wê¿a œwietlnego (wêdruj¹ce 3 diody) w¹¿ zrealizowany 
-;w oparciu o ten zestaw z uczelni. Czêstotliwoœæ prze³¹czania diod zmieniana 
-;za pomoc¹ dwóch dowolnie wybranych przycisków .jeden z nich ma zwiêkszaæ drugi.
-;zmniejszaæ .wykorzystaæ.do tego celu uk³ad licznika czasomierza T0.projekt 
-;zrealizowaæ w oparciu o przerwan.
+;Zrealizuj projekt weza swietlnego (wedrujace 3 diody) waz zrealizowany 
+;w oparciu o ten zestaw z uczelni. Czestotliwosc przelaczania diod zmieniana 
+;za pomoca dwoch dowolnie wybranych przyciskow .jeden z nich ma zwiekszac drugi.
+;zmniejszac .wykorzystac.do tego celu uklad licznika czasomierza T0.projekt 
+;zrealizowac w oparciu o przerwania.
+
+;CPU Frequency: 8 Mhz
+;uC: ATmega32 - program might NOT work correctly on ATmega16 !!!
 
 .nolist
 .include"m32def.inc"
