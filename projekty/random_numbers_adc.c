@@ -1,5 +1,5 @@
 /*
-* Random number by ADC (without stdlib.h)
+* Random number from ADC noise (without stdlib.h)
 * Segments from A to DP - PC0 - PC7
 * Select digit from 0 to 3 - PB0 - PB3
 * Switch (ext int0) - PD2
