@@ -1,3 +1,10 @@
+/*
+* Random number by ADC (with stdlib.h)
+* Segments from A to DP - PC0 - PC7
+* Select digit from 0 to 3 - PB0 - PB3
+* Switch (ext int0) - PD2
+*/
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
