@@ -37,13 +37,11 @@ void digits_show(void) //exercise 6
 
 ISR(TIMER0_COMP_vect) //exercise 7
 {
-	static uint16_t time, number;
+	static uint16_t time;
 	if(!time)
 	{
-		number++;
-		digits_get(&number, digits);
 		digits_show();
-		time = 10; //1 ms
+		time = 10000; //1 s
 	}
 	else
 	time--;
@@ -52,6 +50,8 @@ ISR(TIMER0_COMP_vect) //exercise 7
 
 int main(void)
 {
+	uint16_t number = 1234;
+	
 	//exercise 4
 	DDRC = 0xff; //segments A-DP
 	DDRB = 0x0f; //choose 7seg display
@@ -60,6 +60,8 @@ int main(void)
 	TIMSK |= (1<<OCIE0); //compare output mode
 	OCR0 = 99; //10 kHz = 100 us
 	sei();
+	
+	digits_get(&number, digits);
 	
 	while(1);
 	return 0;

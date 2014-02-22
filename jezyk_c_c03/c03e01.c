@@ -1,16 +1,16 @@
-#include<avr/io.h>
+/* obserwacja na porcie A, od PA0 do PA 4 */
 
-void increase_digit(uint8_t *i_P, uint8_t *actual_digit_P)
-{
-	*actual_digit_P = ((1 << *i_P) % 4) ; //kod 1 z 4
-	(*i_P)++;
-}
+#include <avr/io.h>
+#include <util/delay.h>
 
 int main(void)
 {
-	uint8_t i = 0, actual_digit = 0;
-	
-	increase_digit(&i, &actual_digit);
-	
+	DDRA = 0x0f;
+	uint8_t i=0;
+	while(1)
+	{
+		PORTA = (1 << (++i % 4)); //kod 1 z 4
+		_delay_ms(1000);
+	}
 	return 0;
 }

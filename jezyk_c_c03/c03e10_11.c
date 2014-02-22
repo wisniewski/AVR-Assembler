@@ -32,18 +32,38 @@ void digits_show(void) //exercise 6
 	PORTB = 0xff;
 	PORTB = 0x0f ^ (1<<(++i%4));
 	PORTC = pgm_read_byte(&digits_segment[digits[i%4]]);
-
 }
 
 ISR(TIMER0_COMP_vect) //exercise 7
 {
-	static uint16_t time, number;
-	if(!time)
+	static uint16_t number;
+	static uint8_t mode, key, time;
+	key = PINA & 0x0f;
+	
+	if(!time) //exercise 10-11
 	{
-		number++;
+		if(key != 15) //read button
+		{
+			switch(~key & 0x0f)
+			{
+				case 1: mode = 1; break;
+				case 2: mode = 2; break;
+				case 4: mode = 4; break;
+				case 8: mode = 8; break;
+			}
+		}
+		
+		switch(mode) //do job
+		{
+			case 1: number++; break; //increase
+			case 2: ; break; //do nothing, stop
+			case 4: number = 0; break; //reset
+			case 8: number--; break; //decrease
+		}
+		
 		digits_get(&number, digits);
 		digits_show();
-		time = 10; //1 ms
+		time = 10; //1 ms		
 	}
 	else
 	time--;
@@ -55,6 +75,7 @@ int main(void)
 	//exercise 4
 	DDRC = 0xff; //segments A-DP
 	DDRB = 0x0f; //choose 7seg display
+	PORTA = 0x0f; //4 buttons, pull-up resistor
 	
 	TCCR0 |= (1<<WGM01) | (1<<CS01); //ctc mode, prescaler: 8
 	TIMSK |= (1<<OCIE0); //compare output mode
