@@ -1,81 +1,115 @@
-﻿/* Woltomierz zrezlizowany na Atmega32A na wejsciu PA7 przetwornika
-cyfrowo - analogowego (ADC). Po wykonaniu pomiaru jest generowane 
-przerwanie. Aktualizacja cyfr na multipleksowanym wyswietlaczu 
-7 segmentowym ze wspolna katoda jest w przerwaniu Timera0 w trybie CTC.
-*/
+/* Woltomierz zrezlizowany na Atmega32 */
 
-#include<avr/io.h>
-#include<avr/pgmspace.h>
-#include<avr/interrupt.h>
-#include<stdint.h>
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <avr/pgmspace.h>
 
-//przechowywanie poszczegolnych cyfr w pamieci FLASH
-const uint8_t PROGMEM digits_show[10] = {0x3F, 0x06, 0x5B, 0x4F, 0x66,
-0x6D, 0x7D, 0x07, 0x7F, 0x6F};
+const uint8_t led_digits[10] PROGMEM = {192, 249, 164, 176, 153, 146, 130, 248, 128, 144};
 
-uint8_t measurement = 0;
+void timer0_init(void);
+uint8_t keyboard_scan(void);
+void led_show(uint16_t measurement);
+uint16_t power(uint8_t base, uint8_t exp);
+void adc_init(void);
 
-//deklaracja uzytyvh funkcji
-void select_digits_value(uint8_t [], uint8_t *);
-uint8_t increase_digit(uint8_t *, uint8_t *);
-
-ISR(ADC_vect)
+ISR(TIMER0_COMP_vect)
 {
-	//odczyt wartosci
-	float temp;
-	temp = (ADC*5.0f)/1023.0f*10.0f;
-	measurement = (uint8_t) temp; //konwersja z float na uint8_t
-}
+	static uint16_t time;
+	static uint8_t keyboard_number;
+	float measurement = 0.0;
 
-//obsluga timera0 w trybie CTC
-ISR(TIMER0_COMP_vect) //1kHz = 1 milisekunda
-{
-	uint8_t digits_values[2] = {0}; //tablica od cyfr
-	uint8_t static i = 0, actual_digit = 0, inc = 0;
-	select_digits_value(digits_values, &measurement);
-	PORTC = increase_digit(&i, &actual_digit);
+	ADCSRA |= (1<<ADSC);
+	while(ADCSRA & (1<<ADSC));
 	
-	//przecinek dziesietny tylko po pierwszej cyfrze
-	if(!inc) //odczyt bajtu z pamieci FLASH
-		PORTD = pgm_read_byte(&digits_show[digits_values[inc++]]) | 0x80; //DP 7seg
-	else 
-		PORTD = pgm_read_byte(&digits_show[digits_values[inc++]]); //bez DP 7seg
-	inc %= 2;
+	measurement = ADC*5.0 / 1023.0;
+	uint8_t num; uint16_t frac;
+	num = (uint8_t) measurement;
+	frac = (uint16_t) ((measurement - num) * 1000);
+
+	led_show(num*1000+frac);
 	
+	if(!time)
+	{
+		time = 100;
+		keyboard_number = keyboard_scan();
+	}
+	else
+		time--;
 }
 
 int main(void)
 {
-	DDRD = 0xff; //do sterowania segmentami
-	DDRC = 0x03; //do sterowania tranzystorami
-	
-	//konfiguracja timera0 w trybie CTC 1kHz, czyli do uzyskania liczba 8k
-	TCCR0 |= _BV(CS01) | _BV(CS00) | (1 << WGM01);
-	TIMSK |= (1 << OCIE0);
-	OCR0 = 124; //8000 = 64*124+1
-	
-	//konfiguracja ADC w trybie konwersji ciaglej z przerwaniem
-	ADMUX = _BV(REFS0) | _BV(MUX0) |  _BV(MUX1) |  _BV(MUX2);
-	//Vref = Vcc, PA7
-	ADCSRA = _BV(ADEN) | _BV(ADIE)  | _BV(ADATE) | _BV(ADSC) | _BV(ADPS2);
-	//preskaler 64, wlaczenie ADC, przerwan
-	
-	sei(); //wlaczenie przerwan
-	while(1); //nieskonczona petla
+	DDRB = 0x0f; //leds
+	PORTB = 0x0f;
+	DDRD = 0xff;
+	PORTD = 0xff;
+	DDRC = 0x0f; //keyboard
+	PORTC = 0xff;
+
+	timer0_init();
+	adc_init();
+
+	sei();
+
+	while(1);
 	return 0;
 }
 
-//wpisanie do tablicy poszczegolnej cyfry (dziesiatka i jednosc)
-void select_digits_value(uint8_t digits_values[], uint8_t *num)
+void led_show(uint16_t measurement)
 {
-	*digits_values++ = (*num/10) % 10;
-	*digits_values = *num % 10;
+	uint8_t static number;
+	
+	uint8_t digit[4] = {0};
+	for(int i=0; i<4; i++)
+		*(digit+i) = (measurement / power(10,i)) % 10;
+
+	PORTB = (PORTB | 0x0f) & ~(1<<number);
+	if(number == 3)
+		PORTD = pgm_read_byte(&led_digits[*(digit+number++)]) & ~(0x80);
+	else
+		PORTD = pgm_read_byte(&led_digits[*(digit+number++)]);
+	if(number>3)
+		number = 0;
+
 }
 
-//kod 1 z n, wyswietlaj najpierw 1 cyfre, potem druga
-uint8_t increase_digit(uint8_t *i, uint8_t *actual_digit)
+void timer0_init(void) 
 {
-	*actual_digit = (1 << *i) ; //kod 1 z 2
-	*i = (*i + 1) % 2;
-	return *actual_digit;
+	TCCR0 = (1<<WGM01) | (1<<CS01);
+	OCR0 = 199;
+	TIMSK = (1<<OCIE0);
+}
+
+uint8_t keyboard_scan(void)
+{
+	for(int row=0; row<4; row++)
+	{
+		PORTC = (PORTC | 0x0f) & ~(1<<row);
+		asm volatile ("nop");
+
+		for(int col=0; col<4; col++)
+		{
+			if((PINC & (0x10 << col)) == 0)
+				return 1 + (4*row + col);
+		}
+	}
+	return 0;
+}
+
+uint16_t power(uint8_t base, uint8_t exp)
+{
+	uint16_t val=1;
+	while(exp)
+	{
+		val *= base;
+		exp--;
+	}
+	return val;
+	
+}
+
+void adc_init(void)
+{
+	ADMUX = (1<<REFS0);
+	ADCSRA = (1<<ADEN) | (1<<ADPS0) | (1<<ADPS1)  | (1<<ADPS2);
 }
